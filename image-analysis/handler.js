@@ -19,12 +19,15 @@ class Handler {
     const names = workingItems
       .map(({ Name }) => Name)
       .join(' and ');
+
+    return { names, workingItems };
   }
 
   async main(event) {
     try {
       const imgBuffer = await readFile('./images/cat.jpg');
-      this.detectImageLabels(imgBuffer);
+      const { names, workingItems } = await this.detectImageLabels(imgBuffer);
+      console.log({ names, workingItems });
       return {
         statusCode: 200,
         body: 'Hello!'
