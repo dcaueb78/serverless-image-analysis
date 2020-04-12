@@ -34,9 +34,21 @@ class Handler {
       Text: text,
     };
 
-    const result = await this.translatorSvc.translateText(params).promise();
+    const { TranslatedText } = await this.translatorSvc.translateText(params).promise();
 
-    console.log(JSON.stringify(result));
+    return TranslatedText.split(' e ');
+  }
+
+  formatTextResults(texts, workingItems) {
+    const finalText = [];
+    for( const indexText in texts) {
+      const nameInPortuguese = texts[indexText];
+      const confidence = workingItems[indexText].Confidence;
+      finalText.push(
+        ` ${confidence.toFixed(2)}% de ser do tipo ${nameInPortuguese}`
+      );
+    }
+    return finalText.join('\n');
   }
 
   async main(event) {
@@ -49,10 +61,12 @@ class Handler {
       const texts = await this.translateText(names);
 
       console.log('handling final object...');
+      const finalText = this.formatTextResults(texts, workingItems);
+      console.log('finishing...');
 
       return {
         statusCode: 200,
-        body: "Hello!",
+        body: `A imagem tem\n `.concat(finalText),
       };
     } catch (error) {
       console.log("Error***", error.stack);
